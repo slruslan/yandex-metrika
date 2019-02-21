@@ -485,11 +485,11 @@ class YandexMetrika
      *
      * @return $this
      */
-    public function getRequestToApi(array $urlParams)
+    public function getRequestToApi(array $urlParams, $url = null)
     {
         $cacheName = md5(serialize($urlParams));
 
-        $this->data = $this->request($urlParams, $cacheName);
+        $this->data = $this->request($urlParams, $cacheName, $url);
 
         return $this;
     }
@@ -502,7 +502,7 @@ class YandexMetrika
      *
      * @return mixed|null
      */
-    protected function request($urlParams, $cacheName)
+    protected function request($urlParams, $cacheName, $url = null)
     {
         if (Cache::has($cacheName)) {
             return Cache::get($cacheName);
@@ -516,7 +516,7 @@ class YandexMetrika
                 ],
             ]);
 
-            $response = $client->request('GET', $this->url,
+            $response = $client->request('GET', (is_null($url)) ? $this->url : $url,
                 ['query' => $urlParams]);
 
             $result = json_decode($response->getBody(), true);
